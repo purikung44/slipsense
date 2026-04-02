@@ -63,8 +63,15 @@ DASHBOARD_URL = os.getenv("DASHBOARD_URL", "https://your-dashboard-url.com")
 GOOGLE_CREDS  = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
 DB_PATH       = Path("slipsense.db")
 
-# ✅ เพิ่มบรรทัดนี้ — บอก Google SDK ให้ใช้ไฟล์ credentials
-if GOOGLE_CREDS:
+# ✅ รองรับ credentials จาก JSON content (สำหรับ Railway cloud)
+_creds_json = os.getenv("GOOGLE_CREDENTIALS_JSON", "")
+if _creds_json:
+    _tmp_creds = "/tmp/google_credentials.json"
+    with open(_tmp_creds, "w") as _f:
+        _f.write(_creds_json)
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = _tmp_creds
+    GOOGLE_CREDS = _tmp_creds
+elif GOOGLE_CREDS:
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_CREDS
     
 # ─── DATABASE ─────────────────────────────────────────────────────────────────
